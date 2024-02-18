@@ -80,7 +80,7 @@ class ConfigurationManager:
 
     def get_evaluation_config(self) -> EvaluationConfig:
         eval_config = EvaluationConfig(
-            path_of_model="artifacts/training/model.h5",
+            path_of_model="artifacts/training/model.h5"
             training_data="artifacts/data_ingestion/pneumonia-detection-data",
             mlflow_uri="https://dagshub.com/mdshohidul143/end_to_end_pneomonia_detection_deep_learning_project_using_MLFLOW_DVC.mlflow",
             all_params=self.params,
