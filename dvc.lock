@@ -1,0 +1,113 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/cnnClassifier/pipeline/stage_01_data_ingestion.py
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: 7038d0d00662944ed54ee2c9033e7dc2
+      size: 578
+    - path: src/cnnClassifier/pipeline/stage_01_data_ingestion.py
+      hash: md5
+      md5: ab5be81b094a9cc423b08beae6c402d9
+      size: 914
+    outs:
+    - path: artifacts/data_ingestion/pneumonia-detection-data
+      hash: md5
+      md5: 7aca0fc0f703ead95e6cee98ab43a27e.dir
+      size: 1236482806
+      nfiles: 5856
+  prepare_base_model:
+    cmd: python src/cnnClassifier/pipeline/stage_02_prepare_base_model.py
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: 7038d0d00662944ed54ee2c9033e7dc2
+      size: 578
+    - path: src/cnnClassifier/pipeline/stage_02_prepare_base_model.py
+      hash: md5
+      md5: 467233cce6c6d75a7ac4e3dd11a19fae
+      size: 962
+    params:
+      params.yaml:
+        CLASSES: 2
+        IMAGE_SIZE:
+        - 224
+        - 224
+        - 3
+        INCLUDE_TOP: false
+        LEARNING_RATE: 0.01
+        WEIGHTS: imagenet
+    outs:
+    - path: artifacts/prepare_base_model
+      hash: md5
+      md5: b93845da0b66c02be271c0fda13d7a7c.dir
+      size: 118054560
+      nfiles: 2
+  training:
+    cmd: python src/cnnClassifier/pipeline/stage_03_model_trainer.py
+    deps:
+    - path: artifacts/data_ingestion/pneumonia-detection-data
+      hash: md5
+      md5: 7aca0fc0f703ead95e6cee98ab43a27e.dir
+      size: 1236482806
+      nfiles: 5856
+    - path: artifacts/prepare_base_model
+      hash: md5
+      md5: b93845da0b66c02be271c0fda13d7a7c.dir
+      size: 118054560
+      nfiles: 2
+    - path: config/config.yaml
+      hash: md5
+      md5: 7038d0d00662944ed54ee2c9033e7dc2
+      size: 578
+    - path: src/cnnClassifier/pipeline/stage_03_model_trainer.py
+      hash: md5
+      md5: 6ec55f3955b9ecfe917352556b68fe5e
+      size: 926
+    params:
+      params.yaml:
+        AUGMENTATION: true
+        BATCH_SIZE: 16
+        EPOCHS: 2
+        IMAGE_SIZE:
+        - 224
+        - 224
+        - 3
+    outs:
+    - path: artifacts/training/model.h5
+      hash: md5
+      md5: 61c542fc7f115d94281a7d54b7a6e2c4
+      size: 59337520
+  evaluation:
+    cmd: python src/cnnClassifier/pipeline/stage_04_model_evaluation.py
+    deps:
+    - path: artifacts/data_ingestion/pneumonia-detection-data
+      hash: md5
+      md5: 7aca0fc0f703ead95e6cee98ab43a27e.dir
+      size: 1236482806
+      nfiles: 5856
+    - path: artifacts/training/model.h5
+      hash: md5
+      md5: 61c542fc7f115d94281a7d54b7a6e2c4
+      size: 59337520
+    - path: config/config.yaml
+      hash: md5
+      md5: 7038d0d00662944ed54ee2c9033e7dc2
+      size: 578
+    - path: src/cnnClassifier/pipeline/stage_04_model_evaluation.py
+      hash: md5
+      md5: e009bd5312f7adf03f5e95adc73b40c1
+      size: 931
+    params:
+      params.yaml:
+        BATCH_SIZE: 16
+        IMAGE_SIZE:
+        - 224
+        - 224
+        - 3
+    outs:
+    - path: scores.json
+      hash: md5
+      md5: fc52a38efa32a2c9f6d7892dc9c3a376
+      size: 73

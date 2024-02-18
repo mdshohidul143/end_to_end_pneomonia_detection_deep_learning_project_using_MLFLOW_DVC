@@ -37,9 +37,9 @@ stages:
       - artifacts/training/model.h5
 
   evaluation:
-    cmd: python src/cnnClassifier/pipeline/stage_04_model_evaluation_with_mlflow
+    cmd: python src/cnnClassifier/pipeline/stage_04_model_evaluation.py
     deps:
-      - src/cnnClassifier/pipeline/stage_04_model_evaluation_with_mlflow
+      - src/cnnClassifier/pipeline/stage_04_model_evaluation.py
       - config/config.yaml
       - artifacts/data_ingestion/pneumonia-detection-data
       - artifacts/training/model.h5
